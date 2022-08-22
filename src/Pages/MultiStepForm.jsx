@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import EmailForm from "../Components/MultiStep/EmailForm";
 import NameForm from "../Components/MultiStep/NameForm";
 import PhoneNumber from "../Components/MultiStep/PhoneNumber";
-
-
+import style from "./MultiStepForm.module.css"
 
 
 function MultiStepForm() {
@@ -28,7 +27,7 @@ function MultiStepForm() {
   }
   
   return (
-    <div>
+    <div className={style.loginContainer}>
       
       {emailForm?<EmailForm handleNameForm={handleNameForm}/>: null}
       {nameForm? <NameForm  handlePhoneNumberForm={handlePhoneNumberForm}/>: null}

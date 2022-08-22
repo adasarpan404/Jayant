@@ -1,6 +1,7 @@
 import React from "react";
-import { Input} from "@mui/material";
-import {Form} from "antd"
+import { Input } from "@mui/material";
+import { Form } from "antd";
+
 
 function AppInput(props) {
   const {
@@ -14,8 +15,9 @@ function AppInput(props) {
     required = false,
     label,
     containerProps,
-    containerClassname
+    containerClassname,
   } = props;
+  
   return (
     <Form.Item
       validateStatus={errors && touched ? "error" : ""}
@@ -23,13 +25,14 @@ function AppInput(props) {
       label={label}
       className={`${containerClassname}`}
       {...containerProps}
-
     >
       <Input
         placeholder={placeholder}
         type={type}
         size={size}
         onChange={onChange}
+        validateStatus={errors && touched ? "error" : ""}
+        help={touched && errors ? errors : ""}
         name={name}
         required={required}
       />

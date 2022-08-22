@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import OTPInput from "otp-input-react";
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 
@@ -25,15 +24,13 @@ function PhoneOTPVerification() {
     }
   },[OTP])
 
-  const handleOk = ()=>{
-    setIsModalVisible(false);
-  }
+ 
   const handleCancel = () => {
     setIsModalVisible(false);
   }
   return (
 
-    <>
+    <div display='flex' align-items='center'>
     <OTPInput value={OTP} onChange={setOTP} autoFocus OTPLength={4} otpType="number" disabled={false} />
     <Modal
         open={isModalVisible}
@@ -48,7 +45,7 @@ function PhoneOTPVerification() {
           
         </Box>
       </Modal>
-    </>
+    </div>
   )
 }
 
