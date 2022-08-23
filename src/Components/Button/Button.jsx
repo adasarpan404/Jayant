@@ -1,11 +1,10 @@
 import React from "react";
-import Button from '@mui/material/Button';
+import { Button } from 'antd';
 function AppButton(props) {
-  const { type = "submit", text = "Submit", onClick, disabled = false } = props;
-  console.log(type);
+  const { type = "primary", htmlType = "submit", label="Submit", onClick, disabled = false } = props;
   return (
-    <Button type={type} onClick={onClick} disabled={disabled} variant="contained">
-      {text}
+    <Button type={type} htmlType={htmlType} onClick={onClick} disabled={disabled}>
+      {label}
     </Button>
   );
 }

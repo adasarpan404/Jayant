@@ -1,29 +1,35 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { Col, Row, Form } from "antd";
 import AppInput from '../Input/Input';
 import AppButton from '../Button/Button';
-import { useNavigate } from 'react-router-dom'
 
 const validationSchema = Yup.object().shape({
-    phonenumber: Yup.string()
-        .length(10, "phone number must 10")
-        .matches('[0-9]{10}', "Invalid Phone number")
-        .required("phone is required"),
-  });
+  phonenumber: Yup.string()
+    .length(10, "Phone number must be 10 digits")
+    .matches('[0-9]{10}', "Invalid contact number")
+    .required("Please enter your contact number"),
+});
+
 function PhoneNumber() {
-    const History = useNavigate();
-    const initialValues = {
-        phonenumber: ""
-    }
+  const navigate = useNavigate();
+
+  const initialValues = {
+    phonenumber: ""
+  }
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        History('/phoneVerification')
-        console.log(values);
+      onSubmit={(values, { setSubmitting, resetForm }) => {
+        navigate('/phone-verification')
+        setSubmitting(true);
+        localStorage.setItem("phonenumber", values.phonenumber);
+        localStorage.setItem("otp", "1234");
         setSubmitting(false);
+        resetForm();
       }}
     >
       {({
@@ -34,20 +40,28 @@ function PhoneNumber() {
         handleSubmit,
         isSubmitting,
       }) => (
-        <form onSubmit={handleSubmit}>
-          <AppInput
-            placeholder="Enter your phone number"
-            values={values.phonenumber}
-            touched={touched.phonenumber}
-            errors={errors.phonenumber}
-            onChange={handleChange}
-            // label="enter your email"
-            name="phonenumber"
-            type="tel"
-          />
-          <br />
-          <AppButton type="submit" text="next" disabled={isSubmitting} />
-        </form>
+        <Form onSubmit={handleSubmit}>
+          <Row type={"flex"} justify={"center"} className="padding">
+            <Col span={24}>
+              <AppInput
+                placeholder="Enter your contact number"
+                values={values.phonenumber}
+                touched={touched.phonenumber}
+                error={errors.phonenumber}
+                onChange={handleChange}
+                name="phonenumber"
+                type="tel"
+              />
+            </Col>
+            <Col span={24} className="text-center">
+              <AppButton
+                label="Send OTP"
+                disabled={isSubmitting}
+                onClick={handleSubmit}
+              />
+            </Col>
+          </Row>
+        </Form>
       )}
     </Formik>
   )

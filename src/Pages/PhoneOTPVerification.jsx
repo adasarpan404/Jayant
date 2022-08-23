@@ -1,49 +1,118 @@
-import React, { useEffect, useState } from 'react'
-import OTPInput from "otp-input-react";
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
+import React, { useState, useRef } from 'react'
+import AppInput from '../Components/Input/Input';
+import AppButton from '../Components/Button/Button';
+import { Modal, Typography, Row, Col, Form } from 'antd';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+const validationSchema = Yup.object().shape({
+  otp: Yup.string().required("Please enter your OTP"),
+});
+
 function PhoneOTPVerification() {
-  const [OTP, setOTP] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  useEffect(()=>{
-    if(OTP === "1234"){
-      setIsModalVisible(true);
-    }
-  },[OTP])
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
+  const otpFormRef = useRef();
 
- 
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const handleOtpVerification = (value) => {
+    if (localStorage.getItem("otp") === value) {
+      setSuccessAlert(true);
+    } else {
+      setErrorAlert(true);
+    }
+  }
+
+  const handleSuccessCancel = () => {
+    setSuccessAlert(false);
+    otpFormRef.current.resetForm();
+  }
+
+  const handleErrorCancel = () => {
+    setErrorAlert(false);
+    otpFormRef.current.resetForm();
+  }
+
+  const divStyle = {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'column',
+    height: "20vh",
+  }
+
+  const initailValues = {
+    otp: "",
   }
   return (
-
-    <div display='flex' align-items='center'>
-    <OTPInput value={OTP} onChange={setOTP} autoFocus OTPLength={4} otpType="number" disabled={false} />
-    <Modal
-        open={isModalVisible}
-        onClose={handleCancel}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+    <div className="padding">
+      <Typography.Title level={2} className="text-center">Please Verify OTP</Typography.Title>
+      <Formik
+        innerRef={otpFormRef}
+        initialValues={initailValues}
+        validationSchema={validationSchema}
+        onSubmit={(values, { setSubmitting, resetForm }) => {
+          setSubmitting(true);
+          handleOtpVerification(values.otp);
+          setSubmitting(false);
+          resetForm();
+        }}
       >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            OTP successfully Verified
-          </Typography>
-          
-        </Box>
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Form onSubmit={handleSubmit}>
+            <Row type={"flex"} justify={"center"} className="padding">
+              <Col span={24}>
+                <AppInput
+                  placeholder="Enter your OTP"
+                  values={values.otp}
+                  touched={touched.otp}
+                  error={errors.otp}
+                  onChange={handleChange}
+                  name="otp"
+                  type="text"
+                />
+              </Col>
+              <Col span={24} className="text-center">
+                <AppButton
+                  disabled={isSubmitting}
+                  label="Verify OTP"
+                  onClick={handleSubmit}
+                />
+              </Col>
+            </Row>
+          </Form>
+        )}
+      </Formik>
+      <Modal
+        visible={successAlert}
+        footer={null}
+        centered
+        onCancel={handleSuccessCancel}
+      >
+        <div style={divStyle}>
+          <Typography.Title level={4}>{localStorage.getItem("phonenumber")} ✅</Typography.Title>
+          <Typography.Text>{localStorage.getItem("firstName") + " " + localStorage.getItem("lastName")}, You have successfully verified your contact number.</Typography.Text>
+          <AppButton label={"Cool"} onClick={handleSuccessCancel} />
+        </div>
+      </Modal>
+      <Modal
+        visible={errorAlert}
+        footer={null}
+        centered
+        onCancel={handleErrorCancel}
+      >
+        <div style={divStyle}>
+          <Typography.Title level={4}>{localStorage.getItem("phonenumber")} ❌</Typography.Title>
+          <Typography.Text>{localStorage.getItem("firstName") + " " + localStorage.getItem("lastName")}, You have entered invalid otp.</Typography.Text>
+          <Typography.Text>Verification Failed! Please try again.</Typography.Text>
+          <AppButton label={"Ok"} onClick={handleErrorCancel} />
+        </div>
       </Modal>
     </div>
   )
